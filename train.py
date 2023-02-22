@@ -73,7 +73,7 @@ for epoch in range(params['epoches']):
         print(f'Epoch: {epoch+1}  loss: {eval_loss:.4f}  word score: {eval_word_score:.4f}  struct score: {eval_node_score:.4f} '
               f'ExpRate: {eval_expRate:.4f}')
 
-        if eval_expRate > min_score and not args.check:
+        if eval_expRate >= min_score and not args.check:
             min_score = eval_expRate
             save_checkpoint(model, optimizer, eval_word_score, eval_node_score, eval_expRate, epoch+1,
                             optimizer_save=params['optimizer_save'], path=params['checkpoint_dir'])
