@@ -58,7 +58,7 @@ with open('word.txt', 'w') as writer:
                      # print('already added', c)
                 
     
-    writer.write('above\nbelow\nsub\nsup\nl_sup\ninside\nright')
+    writer.write('above\nbelow\nsub\nsup\nL-sup\ninside\nright')
 print(i)
 
 
