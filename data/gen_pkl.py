@@ -24,7 +24,12 @@ for item in tqdm(images):
 
     img = cv2.imread(item)
     img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    image_dict[os.path.basename(item).replace('.'+args.image_type,'')] = img
+    
+    if (('_0.'+args.image_type) in item):
+      image_dict[os.path.basename(item).replace('_0.'+args.image_type,'')] = img
+    else:
+      image_dict[os.path.basename(item).replace('.'+args.image_type,'')] = img
+
 
 with open(image_out,'wb') as f:
     pkl.dump(image_dict, f)
