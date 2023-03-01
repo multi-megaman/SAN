@@ -67,9 +67,11 @@ for line in tqdm(lines):
         a = words[i]
         if a == '\\limits':
             continue
-        if i == 0 and words[i] in ['_', '^', '{', '}']:
-            print(name)
-            break
+        # if i == 0 and words[i] in ['_', '^', '{', '}']:
+        #     print(name)
+        #     print("O label acima entrou na condicional i == 0 && words[i] in ['_', '^', '{', '}']")
+        #     input("aperte enter para continuar")
+        #     break
 
         elif words[i] == '{':
             if words[i-1] == '\\frac':
