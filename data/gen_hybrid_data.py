@@ -3,8 +3,8 @@ from tqdm import tqdm
 import argparse
 
 parser = argparse.ArgumentParser(description='Spatial channel attention')
-parser.add_argument('--labels_path', default='test/test_labels.txt', type=str, help='path to train or test labels')
-parser.add_argument('--train_test', default='test', type=str, help='train or test')
+parser.add_argument('--labels_path', default='HME100K/test/test_labels.txt', type=str, help='path to train or test labels')
+parser.add_argument('--train_test', default='HME100K/test', type=str, help='train or test')
 args = parser.parse_args()
 
 class Tree:
@@ -67,11 +67,9 @@ for line in tqdm(lines):
         a = words[i]
         if a == '\\limits':
             continue
-        # if i == 0 and words[i] in ['_', '^', '{', '}']:
-        #     print(name)
-        #     print("O label acima entrou na condicional i == 0 && words[i] in ['_', '^', '{', '}']")
-        #     input("aperte enter para continuar")
-        #     break
+        if i == 0 and words[i] in ['_', '^', '{', '}']:
+            print(name)
+            break
 
         elif words[i] == '{':
             if words[i-1] == '\\frac':
@@ -98,11 +96,51 @@ for line in tqdm(lines):
                 parents.append(Tree('\\overrightarrow', id=parent.id))
                 parent = Tree('inside', id=id)
                 id += 1
-            # elif words[i-1] == '\\xrightarrow':
-            #     labels.append([id, 'struct', parent.id, '\\xrightarrow'])
-            #     parents.append(Tree('\\xrightarrow', id=parent.id))
-            #     parent = Tree('inside', id=id)
-            #     id += 1
+            elif words[i-1] == '\\xrightarrow':
+                labels.append([id, 'struct', parent.id, '\\xrightarrow'])
+                parents.append(Tree('\\xrightarrow', id=parent.id))
+                parent = Tree('inside', id=id)
+                id += 1
+            elif words[i-1] == '\\xlongequal':
+                labels.append([id, 'struct', parent.id, '\\xlongequal'])
+                parents.append(Tree('\\xlongequal', id=parent.id))
+                parent = Tree('inside', id=id)
+                id += 1
+            elif words[i-1] == '\\dot':
+                labels.append([id, 'struct', parent.id, '\\dot'])
+                parents.append(Tree('\\dot', id=parent.id))
+                parent = Tree('inside', id=id)
+                id += 1
+            elif words[i-1] == '\\widehat':
+                labels.append([id, 'struct', parent.id, '\\widehat'])
+                parents.append(Tree('\\widehat', id=parent.id))
+                parent = Tree('inside', id=id)
+                id += 1
+            elif words[i-1] == '\\overline':
+                labels.append([id, 'struct', parent.id, '\\overline'])
+                parents.append(Tree('\\overline', id=parent.id))
+                parent = Tree('inside', id=id)
+                id += 1
+            elif words[i-1] == '\\mathop':
+                labels.append([id, 'struct', parent.id, '\\mathop'])
+                parents.append(Tree('\\mathop', id=parent.id))
+                parent = Tree('inside', id=id)
+                id += 1
+            elif words[i-1] == '\\boxed':
+                labels.append([id, 'struct', parent.id, '\\boxed'])
+                parents.append(Tree('\\boxed', id=parent.id))
+                parent = Tree('inside', id=id)
+                id += 1
+            elif words[i-1] == '\\Delta':
+                labels.append([id, 'struct', parent.id, '\\Delta'])
+                parents.append(Tree('\\Delta', id=parent.id))
+                parent = Tree('inside', id=id)
+                id += 1
+            elif words[i-1] == '\\ddot':
+                labels.append([id, 'struct', parent.id, '\\ddot'])
+                parents.append(Tree('\\ddot', id=parent.id))
+                parent = Tree('inside', id=id)
+                id += 1
             elif words[i-1] == ']' and parents[-1].label == '\sqrt':
                 parent = Tree('inside', id=parents[-1].id+1)
 
@@ -151,7 +189,8 @@ for line in tqdm(lines):
                     # id += 1
             else:
                 print('unknown word before {', name, i, words[i-1])
-                # input()
+                print(parents[-1].label)
+                input()
 
 
         elif words[i] == '[' and words[i-1] == '\sqrt':

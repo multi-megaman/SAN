@@ -6,7 +6,7 @@ seed: 20200814
 
 # 训练参数
 epoches: 200
-batch_size: 8
+batch_size: 4
 workers: 0
 optimizer: Adadelta
 lr: 1
@@ -69,7 +69,7 @@ hybrid_tree:
 optimizer_save: True
 checkpoint_dir: 'checkpoints'
 finetune: False
-checkpoint: ""
+checkpoint: "checkpoints/SAN_2023-03-01-11-15_Encoder-DenseNet_Decoder-SAN_decoder_max_size-320-1600_WordRate-0.6223_structRate-0.9760_ExpRate-0.0617_10.pth"
 
 # tensorboard路径
 log_dir: 'logs'
