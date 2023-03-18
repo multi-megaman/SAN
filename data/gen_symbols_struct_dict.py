@@ -20,7 +20,7 @@ train_labels = glob.glob(os.path.join(train_label_path, '*.txt'))
 
 words_dict = set(['<eos>', '<sos>', 'struct'])
 
-with open('word.txt', 'w') as writer:
+with open('word.txt', 'w', encoding="UTF8") as writer:
     writer.write('<eos>\n<sos>\nstruct\n')
     i = 3
     for item in tqdm(train_labels):

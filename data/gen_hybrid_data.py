@@ -3,8 +3,8 @@ from tqdm import tqdm
 import argparse
 
 parser = argparse.ArgumentParser(description='Spatial channel attention')
-parser.add_argument('--labels_path', default='HME100K/test/test_labels.txt', type=str, help='path to train or test labels')
-parser.add_argument('--train_test', default='HME100K/test', type=str, help='train or test')
+parser.add_argument('--labels_path', default='./data/train/train_labels.txt', type=str, help='path to train or test labels')
+parser.add_argument('--train_test', default='train', type=str, help='train or test')
 args = parser.parse_args()
 
 class Tree:
@@ -80,6 +80,34 @@ for line in tqdm(lines):
             elif words[i-1] == '}' and parents[-1].label == '\\frac' and parents[-1].op == 'above':
                 parent = Tree('below', id=parents[-1].id+1)
                 parents[-1].op = 'below'
+                
+            #-------------------------------------------------------------------------------------------
+            #SÓ PASSANDO DIRETO
+            # elif words[i-1] == '\\overset':
+            #     # labels.append([id, words[i], parent.id, parent.label])
+            #     # parent = Tree(words[i],id=id)
+            #     # id += 1
+            #     continue
+            # elif words[i-1] == '}' and words[i-4] == '\\overset':
+            #     continue
+            #USANDO A ESTRUTURA DO \\FRAC
+            elif words[i-1] == '\\overset':
+                labels.append([id, 'struct', parent.id, '\\overset'])
+                parents.append(Tree('\\overset', id=parent.id, op='sup'))
+                id += 1
+                parent = Tree('sup', id=parents[-1].id+1)
+            elif words[i-1] == '}' and parents[-1].label == '\\overset' and parents[-1].op == 'sup':
+                parent = Tree('right', id=parents[-1].id+1)
+                parents[-1].op = 'right'    
+                continue     
+            
+            #USANDO A ESTRUTURA DO ^
+            # elif words[i-1] == '\\overset':
+            #     labels.append([id, 'struct', parent.id, parent.label])
+            #     parents.append(Tree(words[i-2], id=parent.id))
+            #     parent = Tree('sup', id=id)
+            #     id += 1
+            #-------------------------------------------------------------------------------------------
 
             elif words[i-1] == '\sqrt':
                 labels.append([id, 'struct', parent.id, '\sqrt'])
@@ -191,6 +219,7 @@ for line in tqdm(lines):
                 print('unknown word before {', name, i, words[i-1])
                 print(parents[-1].label)
                 input()
+                #continue
 
 
         elif words[i] == '[' and words[i-1] == '\sqrt':
@@ -216,6 +245,10 @@ for line in tqdm(lines):
 
             if i + 1 < len(words) and words[i+1] == '{' and parents[-1].label == '\\frac' and parents[-1].op == 'above':
                 continue
+            #TESTE--------------------------------------------
+            if i + 1 < len(words) and words[i+1] == '{' and parents[-1].label == '\\overset' and parents[-1].op == 'sup':
+                continue
+            #-------------------------------------------------
             if i + 1 < len(words) and words[i + 1] in ['_', '^']:
                 continue
             elif i + 1 < len(words) and words[i + 1] != '}':

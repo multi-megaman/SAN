@@ -5,8 +5,8 @@ experiment: "SAN"
 seed: 20200814
 
 # 训练参数
-epoches: 200
-batch_size: 4
+epoches: 10
+batch_size: 1 #4
 workers: 0
 optimizer: Adadelta
 lr: 1
