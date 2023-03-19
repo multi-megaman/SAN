@@ -11,8 +11,12 @@ from dataset import Words
 
 parser = argparse.ArgumentParser(description='Spatial channel attention')
 parser.add_argument('--config', default='config.yaml', type=str, help='配置文件路径')
-parser.add_argument('--image_path', default='/home/yuanye/work/data/CROHME2014/14_off_image_test', type=str, help='测试image路径')
-parser.add_argument('--label_path', default='/home/yuanye/work/data/CROHME2014/test_caption.txt', type=str, help='测试label路径')
+#parser.add_argument('--image_path', default='data/DataBase/test/test_images', type=str, help='测试image路径')
+#parser.add_argument('--image_path', default='data/new_test/images', type=str, help='测试image路径')
+parser.add_argument('--image_path', default='data/Base_soma_subtracao/test/test_images', type=str, help='')
+#parser.add_argument('--label_path', default='data/DataBase/test/test_labels.txt', type=str, help='测试label路径')
+#parser.add_argument('--label_path', default='data/new_test/labels.txt', type=str, help='测试label路径')
+parser.add_argument('--label_path', default='data/Base_soma_subtracao/test/nossas_labels_sem_nenhum_overset.txt', type=str, help='')
 args = parser.parse_args()
 
 if not args.config:
@@ -33,7 +37,10 @@ params['words'] = words
 model = Backbone(params)
 model = model.to(device)
 
-load_checkpoint(model, None, params['checkpoint'])
+# load_checkpoint(model, None, params['checkpoint'])
+state = torch.load(params['checkpoint'], map_location='cpu')
+
+model.load_state_dict(state['model'])
 
 model.eval()
 
@@ -91,10 +98,14 @@ with torch.no_grad():
     for item in tqdm(labels):
         name, *label = item.split()
         label = ' '.join(label)
-        if name.endswith('.jpg'):
-            name = name.split('.')[0]
-        img = cv2.imread(os.path.join(args.image_path, name + '_0.bmp'))
+        #if name.endswith('.jpg'):
+        #    name = name.split('.')[0]
+        img = cv2.imread(os.path.join(args.image_path, name))
         img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+        dim = (150, 150)
+        img = cv2.resize(img, (dim), interpolation=cv2.INTER_AREA)
+
         image = torch.Tensor(img) / 255
         image = image.unsqueeze(0).unsqueeze(0)
 
@@ -105,6 +116,13 @@ with torch.no_grad():
 
         latex_list = convert(1, prediction)
         latex_string = ' '.join(latex_list)
+
+        print(latex_string)
+        cv2.imshow('image', img)
+
+        cv2.waitKey()
+
+
         if latex_string == label.strip():
             exp_right += 1
         else:

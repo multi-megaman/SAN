@@ -3,9 +3,11 @@ from tqdm import tqdm
 import argparse
 
 parser = argparse.ArgumentParser(description='Spatial channel attention')
-parser.add_argument('--labels_path', default='test/test_labels.txt', type=str, help='path to train or test labels')
-parser.add_argument('--train_test', default='test', type=str, help='train or test')
+parser.add_argument('--labels_path', default='./data/train/train_labels.txt', type=str,
+                    help='path to train or test labels')
+parser.add_argument('--train_test', default='train', type=str, help='train or test')
 args = parser.parse_args()
+
 
 class Tree:
     def __init__(self, label, parent_label='None', id=0, parent_id=0, op='none'):
@@ -26,19 +28,18 @@ def convert(root: Tree, f):
         f.write(f'{root.id}\t{root.label}\t{root.parent_id}\t{root.parent_label}\t{root.tag}\n')
 
 
-
 # label = '../train_latex.txt'
 label = args.labels_path
 out = args.train_test + '_hyb'
 
 position = set(['^', '_'])
-math = set(['\\frac','\sqrt'])
+math = set(['\\frac', '\sqrt'])
 
 with open(label, encoding="utf8") as f:
     lines = f.readlines()
 num = 0
 for line in tqdm(lines):
-    #line = 'train_476.jpg	\\textcircled { 1 } + \\textcircled { 2 } = 2 x + 5 y + 3 x - 5 y = 1 0'
+    # line = 'train_476.jpg	\\textcircled { 1 } + \\textcircled { 2 } = 2 x + 5 y + 3 x - 5 y = 1 0'
     name, *words = line.split()
     name = name.split('.')[0]
     print(name)
@@ -72,41 +73,109 @@ for line in tqdm(lines):
             break
 
         elif words[i] == '{':
-            if words[i-1] == '\\frac':
+            if words[i - 1] == '\\frac':
                 labels.append([id, 'struct', parent.id, parent.label])
                 parents.append(Tree('\\frac', id=parent.id, op='above'))
                 id += 1
-                parent = Tree('above', id=parents[-1].id+1)
-            elif words[i-1] == '}' and parents[-1].label == '\\frac' and parents[-1].op == 'above':
-                parent = Tree('below', id=parents[-1].id+1)
+                parent = Tree('above', id=parents[-1].id + 1)
+            elif words[i - 1] == '}' and parents[-1].label == '\\frac' and parents[-1].op == 'above':
+                parent = Tree('below', id=parents[-1].id + 1)
                 parents[-1].op = 'below'
 
-            elif words[i-1] == '\sqrt':
+            # -------------------------------------------------------------------------------------------
+            # SÓ PASSANDO DIRETO
+            # elif words[i-1] == '\\overset':
+            #     # labels.append([id, words[i], parent.id, parent.label])
+            #     # parent = Tree(words[i],id=id)
+            #     # id += 1
+            #     continue
+            # elif words[i-1] == '}' and words[i-4] == '\\overset':
+            #     continue
+            # USANDO A ESTRUTURA DO \\FRAC
+            elif words[i - 1] == '\\overset':
+                labels.append([id, 'struct', parent.id, '\\overset'])
+                parents.append(Tree('\\overset', id=parent.id, op='sup'))
+                id += 1
+                parent = Tree('sup', id=parents[-1].id + 1)
+            elif words[i - 1] == '}' and parents[-1].label == '\\overset' and parents[-1].op == 'sup':
+                parent = Tree('right', id=parents[-1].id + 1)
+                parents[-1].op = 'right'
+                continue
+
+                # USANDO A ESTRUTURA DO ^
+            # elif words[i-1] == '\\overset':
+            #     labels.append([id, 'struct', parent.id, parent.label])
+            #     parents.append(Tree(words[i-2], id=parent.id))
+            #     parent = Tree('sup', id=id)
+            #     id += 1
+            # -------------------------------------------------------------------------------------------
+
+            elif words[i - 1] == '\sqrt':
                 labels.append([id, 'struct', parent.id, '\sqrt'])
                 parents.append(Tree('\sqrt', id=parent.id))
                 parent = Tree('inside', id=id)
                 id += 1
-            elif words[i-1] == '\\textcircled':
+            elif words[i - 1] == '\\textcircled':
                 labels.append([id, 'struct', parent.id, '\\textcircled'])
                 parents.append(Tree('\\textcircled', id=parent.id))
                 parent = Tree('inside', id=id)
                 id += 1
-            elif words[i-1] == '\\overrightarrow':
+            elif words[i - 1] == '\\overrightarrow':
                 labels.append([id, 'struct', parent.id, '\\overrightarrow'])
                 parents.append(Tree('\\overrightarrow', id=parent.id))
                 parent = Tree('inside', id=id)
                 id += 1
-            # elif words[i-1] == '\\xrightarrow':
-            #     labels.append([id, 'struct', parent.id, '\\xrightarrow'])
-            #     parents.append(Tree('\\xrightarrow', id=parent.id))
-            #     parent = Tree('inside', id=id)
-            #     id += 1
-            elif words[i-1] == ']' and parents[-1].label == '\sqrt':
-                parent = Tree('inside', id=parents[-1].id+1)
+            elif words[i - 1] == '\\xrightarrow':
+                labels.append([id, 'struct', parent.id, '\\xrightarrow'])
+                parents.append(Tree('\\xrightarrow', id=parent.id))
+                parent = Tree('inside', id=id)
+                id += 1
+            elif words[i - 1] == '\\xlongequal':
+                labels.append([id, 'struct', parent.id, '\\xlongequal'])
+                parents.append(Tree('\\xlongequal', id=parent.id))
+                parent = Tree('inside', id=id)
+                id += 1
+            elif words[i - 1] == '\\dot':
+                labels.append([id, 'struct', parent.id, '\\dot'])
+                parents.append(Tree('\\dot', id=parent.id))
+                parent = Tree('inside', id=id)
+                id += 1
+            elif words[i - 1] == '\\widehat':
+                labels.append([id, 'struct', parent.id, '\\widehat'])
+                parents.append(Tree('\\widehat', id=parent.id))
+                parent = Tree('inside', id=id)
+                id += 1
+            elif words[i - 1] == '\\overline':
+                labels.append([id, 'struct', parent.id, '\\overline'])
+                parents.append(Tree('\\overline', id=parent.id))
+                parent = Tree('inside', id=id)
+                id += 1
+            elif words[i - 1] == '\\mathop':
+                labels.append([id, 'struct', parent.id, '\\mathop'])
+                parents.append(Tree('\\mathop', id=parent.id))
+                parent = Tree('inside', id=id)
+                id += 1
+            elif words[i - 1] == '\\boxed':
+                labels.append([id, 'struct', parent.id, '\\boxed'])
+                parents.append(Tree('\\boxed', id=parent.id))
+                parent = Tree('inside', id=id)
+                id += 1
+            elif words[i - 1] == '\\Delta':
+                labels.append([id, 'struct', parent.id, '\\Delta'])
+                parents.append(Tree('\\Delta', id=parent.id))
+                parent = Tree('inside', id=id)
+                id += 1
+            elif words[i - 1] == '\\ddot':
+                labels.append([id, 'struct', parent.id, '\\ddot'])
+                parents.append(Tree('\\ddot', id=parent.id))
+                parent = Tree('inside', id=id)
+                id += 1
+            elif words[i - 1] == ']' and parents[-1].label == '\sqrt':
+                parent = Tree('inside', id=parents[-1].id + 1)
 
-            elif words[i-1] == '^':
-                if words[i-2] != '}':
-                    if words[i-2] == '\sum':
+            elif words[i - 1] == '^':
+                if words[i - 2] != '}':
+                    if words[i - 2] == '\sum':
                         labels.append([id, 'struct', parent.id, parent.label])
                         parents.append(Tree('\sum', id=parent.id))
                         parent = Tree('above', id=id)
@@ -114,21 +183,21 @@ for line in tqdm(lines):
 
                     else:
                         labels.append([id, 'struct', parent.id, parent.label])
-                        parents.append(Tree(words[i-2], id=parent.id))
+                        parents.append(Tree(words[i - 2], id=parent.id))
                         parent = Tree('sup', id=id)
                         id += 1
 
                 else:
                     # labels.append([id, 'struct', parents[-1].id, parents[-1].label])
                     if parents[-1].label == '\sum':
-                        parent = Tree('above', id=parents[-1].id+1)
+                        parent = Tree('above', id=parents[-1].id + 1)
                     else:
                         parent = Tree('sup', id=parents[-1].id + 1)
                     # id += 1
 
-            elif words[i-1] == '_':
-                if words[i-2] != '}':
-                    if words[i-2] == '\sum':
+            elif words[i - 1] == '_':
+                if words[i - 2] != '}':
+                    if words[i - 2] == '\sum':
                         labels.append([id, 'struct', parent.id, parent.label])
                         parents.append(Tree('\sum', id=parent.id))
                         parent = Tree('below', id=id)
@@ -136,23 +205,25 @@ for line in tqdm(lines):
 
                     else:
                         labels.append([id, 'struct', parent.id, parent.label])
-                        parents.append(Tree(words[i-2], id=parent.id))
+                        parents.append(Tree(words[i - 2], id=parent.id))
                         parent = Tree('sub', id=id)
                         id += 1
 
                 else:
                     # labels.append([id, 'struct', parents[-1].id, parents[-1].label])
                     if parents[-1].label == '\sum':
-                        parent = Tree('below', id=parents[-1].id+1)
+                        parent = Tree('below', id=parents[-1].id + 1)
                     else:
-                        parent = Tree('above', id=parents[-1].id+1)
+                        parent = Tree('above', id=parents[-1].id + 1)
                     # id += 1
             else:
-                print('unknown word before {', name, i, words[i-1])
-                # input()
+                print('unknown word before {', name, i, words[i - 1])
+                print(parents[-1].label)
+                input()
+                # continue
 
 
-        elif words[i] == '[' and words[i-1] == '\sqrt':
+        elif words[i] == '[' and words[i - 1] == '\sqrt':
             labels.append([id, 'struct', parent.id, '\sqrt'])
             parents.append(Tree('\sqrt', id=parent.id))
             parent = Tree('L-sup', id=id)
@@ -168,13 +239,18 @@ for line in tqdm(lines):
             # print(words[i - 1])
             # print(words[i + 1])
 
-
-            if words[i-1] != '}':
+            if words[i - 1] != '}':
                 labels.append([id, '<eos>', parent.id, parent.label])
                 id += 1
 
-            if i + 1 < len(words) and words[i+1] == '{' and parents[-1].label == '\\frac' and parents[-1].op == 'above':
+            if i + 1 < len(words) and words[i + 1] == '{' and parents[-1].label == '\\frac' and parents[
+                -1].op == 'above':
                 continue
+            # TESTE--------------------------------------------
+            if i + 1 < len(words) and words[i + 1] == '{' and parents[-1].label == '\\overset' and parents[
+                -1].op == 'sup':
+                continue
+            # -------------------------------------------------
             if i + 1 < len(words) and words[i + 1] in ['_', '^']:
                 continue
             elif i + 1 < len(words) and words[i + 1] != '}':
@@ -187,13 +263,12 @@ for line in tqdm(lines):
             if words[i] in ['^', '_']:
                 continue
             labels.append([id, words[i], parent.id, parent.label])
-            parent = Tree(words[i],id=id)
+            parent = Tree(words[i], id=id)
             id += 1
 
-
-    parent_dict = {0:[]}
+    parent_dict = {0: []}
     for i in range(len(labels)):
-        parent_dict[i+1] = []
+        parent_dict[i + 1] = []
         parent_dict[labels[i][2]].append(labels[i][3])
 
     if not os.path.exists(out):
@@ -214,7 +289,7 @@ for line in tqdm(lines):
                 tem = tem + '\tright' if 'right' in parent_dict[id] else tem + '\tNone'
                 f.write(tem + '\n')
         if label != '<eos>':
-            f.write(f'{id+1}\t<eos>\t{id}\t{label}\tNone\tNone\tNone\tNone\tNone\tNone\tNone\n')
+            f.write(f'{id + 1}\t<eos>\t{id}\t{label}\tNone\tNone\tNone\tNone\tNone\tNone\tNone\n')
 
 
 

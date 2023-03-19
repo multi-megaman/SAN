@@ -19,6 +19,7 @@ class Backbone(nn.Module):
     def forward(self, images, images_mask, labels, labels_mask, is_train=True):
 
         cnn_features = self.encoder(images)
+
         word_probs, struct_probs, words_alphas, struct_alphas, c2p_probs, c2p_alphas = self.decoder(cnn_features, labels, images_mask, labels_mask, is_train=is_train)
 
         word_average_loss = self.cross(word_probs.contiguous().view(-1, word_probs.shape[-1]), labels[:,:,1].view(-1))

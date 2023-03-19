@@ -113,7 +113,8 @@ class SAN_decoder(nn.Module):
                     if labels[num, -(i + 1), 1] == 2:
                         relation[num] = 2
                     elif relation[num].item() not in self.struct_dict and relation[num].item() != 0:
-                        relation[num] = 114
+                        relation[num] = 5
+
                 relation_embedding = self.embedding(relation)
 
                 c2p_hidden_first = self.c2p_input_gru(torch.cat((child_embedding, relation_embedding), dim=1), c2p_hidden)

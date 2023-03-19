@@ -1,4 +1,7 @@
 import torch
+# TESTE-----------------
+import torchvision
+# ----------------------
 import pickle as pkl
 from torch.utils.data import DataLoader, Dataset, RandomSampler, SequentialSampler
 import cv2
@@ -6,7 +9,7 @@ import cv2
 
 class HYBTr_Dataset(Dataset):
 
-    def __init__(self, params, image_path, label_path, words, is_train=True):
+    def __init__(self, params, image_path, label_path, words, is_train=True, transform=None):
         super(HYBTr_Dataset, self).__init__()
         with open(image_path, 'rb') as f:
             self.images = pkl.load(f)
@@ -20,6 +23,10 @@ class HYBTr_Dataset(Dataset):
         self.params = params
         self.image_height = params['image_height']
         self.image_width = params['image_width']
+
+        # TESTE---------------------------
+        self.transform = transform
+        # --------------------------------
 
     def __len__(self):
         return len(self.labels)
@@ -47,14 +54,20 @@ class HYBTr_Dataset(Dataset):
         parent_ids = [int(item.split()[2]) for item in label]
         parent_ids = torch.LongTensor(parent_ids)
 
-
         struct_label = [item.split()[4:] for item in label]
         struct = torch.zeros((len(struct_label), len(struct_label[0]))).long()
         for i in range(len(struct_label)):
             for j in range(len(struct_label[0])):
                 struct[i][j] = struct_label[i][j] != 'None'
 
-        label = torch.cat([child_ids.unsqueeze(1), child_words.unsqueeze(1), parent_ids.unsqueeze(1), parent_words.unsqueeze(1), struct], dim=1)
+        label = torch.cat(
+            [child_ids.unsqueeze(1), child_words.unsqueeze(1), parent_ids.unsqueeze(1), parent_words.unsqueeze(1),
+             struct], dim=1)
+
+        # TESTE -----------------------------------------
+        if self.transform:
+            image = self.transform(image)
+        # -----------------------------------------------
 
         return image, label
 
@@ -64,7 +77,8 @@ class HYBTr_Dataset(Dataset):
         batch, channel = len(batch_images), batch_images[0][0].shape[0]
         proper_items = []
         for item in batch_images:
-            if item[0].shape[1] * max_width > self.image_width * self.image_height or item[0].shape[2] * max_height > self.image_width * self.image_height:
+            if item[0].shape[1] * max_width > self.image_width * self.image_height or item[0].shape[
+                2] * max_height > self.image_width * self.image_height:
                 continue
             max_height = item[0].shape[1] if item[0].shape[1] > max_height else max_height
             max_width = item[0].shape[2] if item[0].shape[2] > max_width else max_width
@@ -93,7 +107,6 @@ class HYBTr_Dataset(Dataset):
 
 
 def get_dataset(params):
-
     words = Words(params['word_path'])
 
     params['word_num'] = len(words)
@@ -101,17 +114,49 @@ def get_dataset(params):
     print(f"training data，images: {params['train_image_path']} labels: {params['train_label_path']}")
     print(f"test data，images: {params['eval_image_path']} labels: {params['eval_label_path']}")
     train_dataset = HYBTr_Dataset(params, params['train_image_path'], params['train_label_path'], words)
+    # TESTE-------------------------------------------------------
+
+    transform = torchvision.transforms.Compose([
+        torchvision.transforms.ToPILImage(),
+        torchvision.transforms.RandomResizedCrop(size=(150, 150),
+                                                 scale=(0.8, 1.2),
+                                                 ratio=(3.0 / 4.0, 4.0 / 3.0)),
+        torchvision.transforms.RandomRotation(degrees=15),
+        torchvision.transforms.RandomAdjustSharpness(sharpness_factor=2),
+        torchvision.transforms.ElasticTransform(alpha=20.0, sigma=2.0),
+        # torchvision.transforms.RandomEqualize(),
+
+        torchvision.transforms.ToTensor()
+    ])
+
+    datasets_list = [train_dataset]
+
+    for i in range(5):
+        train_dataset_transformed = HYBTr_Dataset(params, params['train_image_path'], params['train_label_path'], words,
+                                                  transform=transform)
+        datasets_list.append(train_dataset_transformed)
+
+    train_dataset_final = torch.utils.data.ConcatDataset(datasets_list)
+
+    # ------------------------------------------------------------
     eval_dataset = HYBTr_Dataset(params, params['eval_image_path'], params['eval_label_path'], words)
 
-    train_sampler = RandomSampler(train_dataset)
+    # # TESTE-------------------------------------------------------
+    # eval_dataset_transformed = HYBTr_Dataset(params, params['eval_image_path'], params['eval_label_path'], words,
+    #                                          transform)
+    #
+    # eval_dataset_final = torch.utils.data.ConcatDataset([eval_dataset_transformed, eval_dataset])
+    # ------------------------------------------------------------
+
+    train_sampler = RandomSampler(train_dataset_final)
     eval_sampler = RandomSampler(eval_dataset)
 
-    train_loader = DataLoader(train_dataset, batch_size=params['batch_size'], sampler=train_sampler,
+    train_loader = DataLoader(train_dataset_final, batch_size=params['batch_size'], sampler=train_sampler,
                               num_workers=params['workers'], collate_fn=train_dataset.collate_fn, pin_memory=True)
     eval_loader = DataLoader(eval_dataset, batch_size=1, sampler=eval_sampler,
-                              num_workers=params['workers'], collate_fn=eval_dataset.collate_fn, pin_memory=True)
+                             num_workers=params['workers'], collate_fn=eval_dataset.collate_fn, pin_memory=True)
 
-    print(f'train dataset: {len(train_dataset)} train steps: {len(train_loader)} '
+    print(f'train dataset: {len(train_dataset_final)} train steps: {len(train_loader)} '
           f'eval dataset: {len(eval_dataset)} eval steps: {len(eval_loader)}')
 
     return train_loader, eval_loader
@@ -119,7 +164,7 @@ def get_dataset(params):
 
 class Words:
     def __init__(self, words_path):
-        with open(words_path) as f:
+        with open(words_path, encoding="UTF8") as f:
             words = f.readlines()
             print(f'{len(words)} symbols in total')
 
