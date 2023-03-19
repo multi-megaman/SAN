@@ -133,8 +133,8 @@ def get_dataset(params):
     eval_dataset_final = torch.utils.data.ConcatDataset([eval_dataset_transformed,eval_dataset])
     #------------------------------------------------------------
 
-    train_sampler = RandomSampler(train_dataset)
-    eval_sampler = RandomSampler(eval_dataset)
+    train_sampler = RandomSampler(train_dataset_final)
+    eval_sampler = RandomSampler(eval_dataset_final)
 
     train_loader = DataLoader(train_dataset_final, batch_size=params['batch_size'], sampler=train_sampler,
                               num_workers=params['workers'], collate_fn=train_dataset.collate_fn, pin_memory=True)
