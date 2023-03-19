@@ -126,17 +126,23 @@ def get_dataset(params):
     train_dataset_final = torch.utils.data.ConcatDataset([train_dataset_transformed,train_dataset])
     #------------------------------------------------------------
     eval_dataset = HYBTr_Dataset(params, params['eval_image_path'], params['eval_label_path'], words)
+    
+    #TESTE-------------------------------------------------------
+    eval_dataset_transformed = HYBTr_Dataset(params, params['eval_image_path'], params['eval_label_path'], words, transform)
+    
+    eval_dataset_final = torch.utils.data.ConcatDataset([eval_dataset_transformed,eval_dataset])
+    #------------------------------------------------------------
 
     train_sampler = RandomSampler(train_dataset)
     eval_sampler = RandomSampler(eval_dataset)
 
     train_loader = DataLoader(train_dataset_final, batch_size=params['batch_size'], sampler=train_sampler,
                               num_workers=params['workers'], collate_fn=train_dataset.collate_fn, pin_memory=True)
-    eval_loader = DataLoader(eval_dataset, batch_size=1, sampler=eval_sampler,
+    eval_loader = DataLoader(eval_dataset_final, batch_size=1, sampler=eval_sampler,
                               num_workers=params['workers'], collate_fn=eval_dataset.collate_fn, pin_memory=True)
 
     print(f'train dataset: {len(train_dataset_final)} train steps: {len(train_loader)} '
-          f'eval dataset: {len(eval_dataset)} eval steps: {len(eval_loader)}')
+          f'eval dataset: {len(eval_dataset_final)} eval steps: {len(eval_loader)}')
 
     return train_loader, eval_loader
 
