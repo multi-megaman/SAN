@@ -32,7 +32,7 @@ torch.manual_seed(params['seed'])
 torch.cuda.manual_seed(params['seed'])
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-device = 'cpu'
+#device = 'cpu'
 params['device'] = device
 
 train_loader, eval_loader = get_dataset(params)

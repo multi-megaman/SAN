@@ -30,6 +30,10 @@ def convert(root: Tree, f):
 
 # label = '../train_latex.txt'
 label = args.labels_path
+print()
+print('label: ', label)
+print()
+
 out = args.train_test + '_hyb'
 
 position = set(['^', '_'])

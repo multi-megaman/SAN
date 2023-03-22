@@ -5,8 +5,8 @@ experiment: "SAN"
 seed: 20200814
 
 # 训练参数
-epoches: 500
-batch_size: 12
+epoches: 1000
+batch_size: 32
 workers: 0
 optimizer: Adadelta
 lr: 1
@@ -85,7 +85,10 @@ finetune: False
 #checkpoint: "checkpoints/SAN_2023-03-18-07-54_Encoder-DenseNet_Decoder-SAN_decoder_max_size-320-1600/SAN_2023-03-18-07-54_Encoder-DenseNet_Decoder-SAN_decoder_max_size-320-1600_WordRate-0.4992_structRate-1.0000_ExpRate-0.2113_191.pth"
 
 # Tentativa 2 - Base_soma_subtracao nossas_labels_sem_nenhum_overset
-checkpoint: "checkpoints/SAN_2023-03-18-09-32_Encoder-DenseNet_Decoder-SAN_decoder_max_size-200-200/SAN_2023-03-18-09-32_Encoder-DenseNet_Decoder-SAN_decoder_max_size-200-200_WordRate-1.0000_structRate-1.0000_ExpRate-1.0000_491.pth"
+#checkpoint: "checkpoints/SAN_2023-03-20-07-22_Encoder-DenseNet_Decoder-SAN_decoder_max_size-200-200/SAN_2023-03-20-07-22_Encoder-DenseNet_Decoder-SAN_decoder_max_size-200-200_WordRate-0.7647_structRate-1.0000_ExpRate-0.4000_441.pth"
+
+# Tentativa 3 - test_nossas_labels_sem_oversets_enlinhados_e_vazaios
+#checkpoint: "checkpoints/.pth"
 
 #checkpoint: "checkpoints/SAN_decoder/best.pth"
 
