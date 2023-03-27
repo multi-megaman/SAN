@@ -16,7 +16,7 @@ parser.add_argument('--config', default='config.yaml', type=str, help='配置文
 parser.add_argument('--image_path', default='data/Base_soma_subtracao/test/test_images', type=str, help='')
 #parser.add_argument('--label_path', default='data/DataBase/test/test_labels.txt', type=str, help='测试label路径')
 #parser.add_argument('--label_path', default='data/new_test/labels.txt', type=str, help='测试label路径')
-parser.add_argument('--label_path', default='data/Base_soma_subtracao/test/nossas_labels_sem_nenhum_overset_test.txt', type=str, help='')
+parser.add_argument('--label_path', default='data/Base_soma_subtracao/test/test_nossas_labels_sem_oversets_enlinhados_e_vazaios.txt', type=str, help='')
 args = parser.parse_args()
 
 if not args.config:
