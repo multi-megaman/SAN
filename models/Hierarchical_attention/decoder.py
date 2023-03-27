@@ -113,7 +113,7 @@ class SAN_decoder(nn.Module):
                     if labels[num, -(i + 1), 1] == 2:
                         relation[num] = 2
                     elif relation[num].item() not in self.struct_dict and relation[num].item() != 0:
-                        relation[num] = 5
+                        relation[num] = 25
 
                 relation_embedding = self.embedding(relation)
 
