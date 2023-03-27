@@ -73,6 +73,23 @@ def convert(nodeid, gtd_list):
             for i in range(len(child_list)):
                 if child_list[i][2] not in ['Right','Above','Below']:
                     return_string += ['illegal']
+                    
+        #TESTE--------------------------
+        elif gtd_list[nodeid][0] == '\\overset':
+            return_string = [gtd_list[nodeid][0]]
+            for i in range(len(child_list)):
+                if child_list[i][2] == 'sup':
+                    return_string += ['{'] + convert(child_list[i][1], gtd_list) + ['}']
+            for i in range(len(child_list)):
+                if child_list[i][2] == 'Below':
+                    return_string += ['{'] + convert(child_list[i][1], gtd_list) + ['}']
+            for i in range(len(child_list)):
+                if child_list[i][2] == 'Right':
+                    return_string += convert(child_list[i][1], gtd_list)
+            for i in range(len(child_list)):
+                if child_list[i][2] not in ['Right','Above','Below']:
+                    return_string += ['illegal']
+        #-------------------------------
         else:
             return_string = [gtd_list[nodeid][0]]
             for i in range(len(child_list)):

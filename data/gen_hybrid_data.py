@@ -102,8 +102,8 @@ for line in tqdm(lines):
                 id += 1
                 parent = Tree('sup', id=parents[-1].id + 1)
             elif words[i - 1] == '}' and parents[-1].label == '\\overset' and parents[-1].op == 'sup':
-                parent = Tree('right', id=parents[-1].id + 1)
-                parents[-1].op = 'right'
+                parent = Tree('below', id=parents[-1].id + 1)
+                parents[-1].op = 'below'
                 continue
 
                 # USANDO A ESTRUTURA DO ^
