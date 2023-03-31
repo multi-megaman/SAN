@@ -17,7 +17,15 @@ class SAN_decoder(nn.Module):
         self.device = params['device']
         self.word_num = params['word_num']
         self.struct_num = params['struct_num']
-        self.struct_dict = [108, 109, 110, 111, 112, 113, 114]
+        
+        #TESTE---------------------------------------
+        with open('../data/word.txt',"r", encoding='UTF8') as f:
+            words_dict = f.readlines()
+        
+        self.struct_dict = [words_dict.index("above"), words_dict.index("below"), words_dict.index("sub"), words_dict.index("sup"), words_dict.index("L-sup"), words_dict.index("inside"), words_dict.index("inside")]
+        
+        #--------------------------------------------
+        #self.struct_dict = [108, 109, 110, 111, 112, 113, 114]
 
         self.ratio = params['densenet']['ratio'] if params['encoder']['net'] == 'DenseNet' else 16 * params['resnet']['conv1_stride']
 
@@ -64,6 +72,11 @@ class SAN_decoder(nn.Module):
 
     def forward(self, cnn_features, images_mask):
 
+        #TESTE---------------------------------------
+        with open('../data/word.txt',"r", encoding='UTF8') as f:
+            words_dict = f.readlines()
+        #--------------------------------------------
+        
         height, width = cnn_features.shape[2:]
         images_mask = images_mask[:, :, ::self.ratio, ::self.ratio]
 
@@ -105,14 +118,14 @@ class SAN_decoder(nn.Module):
                 word_prob = self.word_convert(word_out_state)
                 p_word = word
                 _, word = word_prob.max(1)
-                if word.item() and word.item() != 2:
+                if word.item() and word.item() != words_dict.index("struct"):
                     cid += 1
                     p_id = cid
                     result.append([self.params['words'].words_index_dict[word.item()], cid, pid, p_re])
                     prediction = prediction + self.params['words'].words_index_dict[word.item()] + ' '
                 #
                 # 当预测文字为结构符
-                if word.item() == 2:
+                if word.item() == words_dict.index("struct"):
 
                     struct_prob = self.struct_convert(word_out_state)
 
@@ -125,31 +138,31 @@ class SAN_decoder(nn.Module):
                         break
                     word, parent_hidden, p_word, pid, word_alpha_sum = struct_list.pop()
                     word_embedding = self.embedding(torch.LongTensor([word]).to(device=self.device))
-                    if word == 110 or (word == 109 and p_word.item() == 63):
+                    if word == words_dict.index("sub") or (word == words_dict.index("below") and p_word.item() == words_dict.index("\sum")):
                         prediction = prediction + '_ { '
                         p_re = 'Sub'
                         right_brace += 1
-                    elif word == 111 or (word == 108 and p_word.item() == 63):
+                    elif word ==  words_dict.index("sup") or (word ==  words_dict.index("above") and p_word.item() ==  words_dict.index("\sum")):
                         p_re = 'Sup'
                         prediction = prediction + '^ { '
                         right_brace += 1
-                    elif word == 108 and p_word.item() == 14:
+                    elif word ==  words_dict.index("above") and p_word.item() ==  words_dict.index("\\frac"):
                         p_re = 'Above'
                         prediction = prediction + '{ '
                         right_brace += 1
-                    elif word == 109 and p_word.item() == 14:
+                    elif word ==  words_dict.index("below") and p_word.item() ==  words_dict.index("\\frac"):
                         p_re = 'Below'
                         prediction = prediction + '{ '
                         right_brace += 1
-                    elif word == 112:
+                    elif word ==  words_dict.index("L-sup"):
                         p_re = 'l_sup'
                         prediction = prediction + '[ '
-                    elif word == 113:
+                    elif word ==  words_dict.index("inside"):
                         p_re = 'Inside'
                         prediction = prediction + '{ '
                         right_brace += 1
 
-                elif word == 0:
+                elif word ==  words_dict.index("<eos>"):
                     if len(struct_list) == 0:
                         if right_brace != 0:
                             for brach in range(right_brace):
@@ -157,11 +170,11 @@ class SAN_decoder(nn.Module):
                         break
                     word, parent_hidden, p_word, pid, word_alpha_sum = struct_list.pop()
                     word_embedding = self.embedding(torch.LongTensor([word]).to(device=self.device))
-                    if word == 113:
+                    if word ==  words_dict.index("inside"):
                         prediction = prediction + '] { '
                         right_brace += 1
                         p_re = 'Inside'
-                    elif word == 110 or (word == 109 and p_word.item() == 63):
+                    elif word ==  words_dict.index("sub") or (word ==  words_dict.index("below") and p_word.item() ==  words_dict.index("\sum")):
                         p_re = 'Sub'
                         prediction += '} '
                         right_brace -= 1
@@ -171,7 +184,7 @@ class SAN_decoder(nn.Module):
                                 right_brace -= 1
                         prediction = prediction + '_ { '
                         right_brace += 1
-                    elif word == 111 or (word == 108 and p_word.item() == 63):
+                    elif word ==  words_dict.index("sup") or (word ==  words_dict.index("above") and p_word.item() ==  words_dict.index("\sum")):
                         p_re = 'Sup'
                         prediction += '} '
                         right_brace -= 1
@@ -181,7 +194,7 @@ class SAN_decoder(nn.Module):
                                 right_brace -= 1
                         prediction = prediction + '^ { '
                         right_brace += 1
-                    elif word == 108 and p_word.item() == 14:
+                    elif word ==  words_dict.index("above") and p_word.item() ==  words_dict.index("\\frac"):
                         p_re = 'Above'
                         prediction += '} '
                         right_brace -= 1
@@ -191,7 +204,7 @@ class SAN_decoder(nn.Module):
                                 right_brace -= 1
                         prediction = prediction + '{ '
                         right_brace += 1
-                    elif word == 109 and p_word.item() == 14:
+                    elif word ==  words_dict.index("below") and p_word.item() ==  words_dict.index("\\frac"):
                         p_re = 'Below'
                         prediction += '} '
                         right_brace -= 1
@@ -201,14 +214,14 @@ class SAN_decoder(nn.Module):
                                 right_brace -= 1
                         prediction = prediction + '{ '
                         right_brace += 1
-                    elif word == 112:
+                    elif word ==  words_dict.index("L-sup"):
                         p_re = 'l_sup'
                         prediction = prediction + '[ '
-                    elif word == 113:
+                    elif word ==  words_dict.index("inside"):
                         p_re = 'Inside'
                         prediction = prediction + '] { '
                         right_brace += 1
-                    elif word == 114:
+                    elif word ==  words_dict.index("right"):
                         p_re = 'Right'
                         prediction = prediction + '} '
                         right_brace -= 1

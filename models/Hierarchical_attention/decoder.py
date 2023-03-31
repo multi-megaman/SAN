@@ -17,7 +17,15 @@ class SAN_decoder(nn.Module):
         self.device = params['device']
         self.word_num = params['word_num']
         self.struct_num = params['struct_num']
-        self.struct_dict = [108, 109, 110, 111, 112, 113, 114]
+        
+        #TESTE---------------------------------------
+        with open('../../data/word.txt',"r", encoding='UTF8') as f:
+            words_dict = f.readlines()
+        
+        self.struct_dict = [words_dict.index("above"), words_dict.index("below"), words_dict.index("sub"), words_dict.index("sup"), words_dict.index("L-sup"), words_dict.index("inside"), words_dict.index("inside")]
+        #--------------------------------------------
+        
+        # self.struct_dict = [108, 109, 110, 111, 112, 113, 114]
 
         self.ratio = params['densenet']['ratio'] if params['encoder']['net'] == 'DenseNet' else 16 * params['resnet']['conv1_stride']
 
@@ -63,6 +71,11 @@ class SAN_decoder(nn.Module):
             self.dropout = nn.Dropout(params['dropout_ratio'])
 
     def forward(self, cnn_features, labels, images_mask, labels_mask, is_train=True):
+
+        #TESTE---------------------------------------
+        with open('../../data/word.txt',"r", encoding='UTF8') as f:
+            words_dict = f.readlines()
+        #--------------------------------------------
 
         batch_size, num_steps, _ = labels.shape
         height, width = cnn_features.shape[2:]
@@ -111,9 +124,9 @@ class SAN_decoder(nn.Module):
                 relation = labels[:, -(i + 1), 3].clone()
                 for num in range(relation.shape[0]):
                     if labels[num, -(i + 1), 1] == 2:
-                        relation[num] = 2
+                        relation[num] = words_dict.index("struct")
                     elif relation[num].item() not in self.struct_dict and relation[num].item() != 0:
-                        relation[num] = 114
+                        relation[num] = words_dict.index("right")
 
                 relation_embedding = self.embedding(relation)
 
@@ -174,7 +187,7 @@ class SAN_decoder(nn.Module):
 
                 _, word = word_prob.max(1)
 
-                if word.item() == 2:
+                if word.item() == words_dict.index("struct"):
 
                     struct_prob = self.struct_convert(word_out_state)
                     struct_probs[0][i, :] = struct_prob
