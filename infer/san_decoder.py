@@ -19,7 +19,7 @@ class SAN_decoder(nn.Module):
         self.struct_num = params['struct_num']
         
         #TESTE---------------------------------------
-        with open('../data/word.txt',"r", encoding='UTF8') as f:
+        with open('data\word.txt',"r", encoding='UTF8') as f:
             words_dict = f.read().splitlines()
         
         self.struct_dict = [words_dict.index("above"), words_dict.index("below"), words_dict.index("sub"), words_dict.index("sup"), words_dict.index("L-sup"), words_dict.index("inside"), words_dict.index("inside")]
@@ -73,7 +73,7 @@ class SAN_decoder(nn.Module):
     def forward(self, cnn_features, images_mask):
 
         #TESTE---------------------------------------
-        with open('../data/word.txt',"r", encoding='UTF8') as f:
+        with open('data\word.txt',"r", encoding='UTF8') as f:
             words_dict = f.read().splitlines()
         #--------------------------------------------
         
@@ -139,22 +139,24 @@ class SAN_decoder(nn.Module):
                     word, parent_hidden, p_word, pid, word_alpha_sum = struct_list.pop()
                     print(torch.LongTensor([word]))
                     word_embedding = self.embedding(torch.LongTensor([word]).to(device=self.device))
-                    if word == words_dict.index("sub") or (word == words_dict.index("below") and p_word.item() == words_dict.index("\sum")):
-                        prediction = prediction + '_ { '
-                        p_re = 'Sub'
-                        right_brace += 1
-                    elif word ==  words_dict.index("sup") or (word ==  words_dict.index("above") and p_word.item() ==  words_dict.index("\sum")):
-                        p_re = 'Sup'
-                        prediction = prediction + '^ { '
-                        right_brace += 1
-                    elif word ==  words_dict.index("above") and p_word.item() ==  words_dict.index("\\frac"):
-                        p_re = 'Above'
-                        prediction = prediction + '{ '
-                        right_brace += 1
-                    elif word ==  words_dict.index("below") and p_word.item() ==  words_dict.index("\\frac"):
-                        p_re = 'Below'
-                        prediction = prediction + '{ '
-                        right_brace += 1
+                    if ("\sum" in words_dict):
+                        if word == words_dict.index("sub") or (word == words_dict.index("below") and p_word.item() == words_dict.index("\sum")):
+                            prediction = prediction + '_ { '
+                            p_re = 'Sub'
+                            right_brace += 1
+                        elif word ==  words_dict.index("sup") or (word ==  words_dict.index("above") and p_word.item() ==  words_dict.index("\sum")):
+                            p_re = 'Sup'
+                            prediction = prediction + '^ { '
+                            right_brace += 1
+                    if ("\\frac" in words_dict):
+                        if word ==  words_dict.index("above") and p_word.item() ==  words_dict.index("\\frac"):
+                            p_re = 'Above'
+                            prediction = prediction + '{ '
+                            right_brace += 1
+                        elif word ==  words_dict.index("below") and p_word.item() ==  words_dict.index("\\frac"):
+                            p_re = 'Below'
+                            prediction = prediction + '{ '
+                            right_brace += 1
                     elif word ==  words_dict.index("L-sup"):
                         p_re = 'l_sup'
                         prediction = prediction + '[ '
@@ -175,46 +177,48 @@ class SAN_decoder(nn.Module):
                         prediction = prediction + '] { '
                         right_brace += 1
                         p_re = 'Inside'
-                    elif word ==  words_dict.index("sub") or (word ==  words_dict.index("below") and p_word.item() ==  words_dict.index("\sum")):
-                        p_re = 'Sub'
-                        prediction += '} '
-                        right_brace -= 1
-                        if right_brace != 0:
-                            for num in range(right_brace):
-                                prediction += '} '
-                                right_brace -= 1
-                        prediction = prediction + '_ { '
-                        right_brace += 1
-                    elif word ==  words_dict.index("sup") or (word ==  words_dict.index("above") and p_word.item() ==  words_dict.index("\sum")):
-                        p_re = 'Sup'
-                        prediction += '} '
-                        right_brace -= 1
-                        if right_brace != 0:
-                            for num in range(right_brace):
-                                prediction += '} '
-                                right_brace -= 1
-                        prediction = prediction + '^ { '
-                        right_brace += 1
-                    elif word ==  words_dict.index("above") and p_word.item() ==  words_dict.index("\\frac"):
-                        p_re = 'Above'
-                        prediction += '} '
-                        right_brace -= 1
-                        if right_brace != 0:
-                            for num in range(right_brace):
-                                prediction += '} '
-                                right_brace -= 1
-                        prediction = prediction + '{ '
-                        right_brace += 1
-                    elif word ==  words_dict.index("below") and p_word.item() ==  words_dict.index("\\frac"):
-                        p_re = 'Below'
-                        prediction += '} '
-                        right_brace -= 1
-                        if right_brace != 0:
-                            for num in range(right_brace):
-                                prediction += '} '
-                                right_brace -= 1
-                        prediction = prediction + '{ '
-                        right_brace += 1
+                    if ("\sum" in words_dict):
+                        if word ==  words_dict.index("sub") or (word ==  words_dict.index("below") and p_word.item() ==  words_dict.index("\sum")):
+                            p_re = 'Sub'
+                            prediction += '} '
+                            right_brace -= 1
+                            if right_brace != 0:
+                                for num in range(right_brace):
+                                    prediction += '} '
+                                    right_brace -= 1
+                            prediction = prediction + '_ { '
+                            right_brace += 1
+                        elif word ==  words_dict.index("sup") or (word ==  words_dict.index("above") and p_word.item() ==  words_dict.index("\sum")):
+                            p_re = 'Sup'
+                            prediction += '} '
+                            right_brace -= 1
+                            if right_brace != 0:
+                                for num in range(right_brace):
+                                    prediction += '} '
+                                    right_brace -= 1
+                            prediction = prediction + '^ { '
+                            right_brace += 1
+                    if ("\\frac" in words_dict):
+                        if word ==  words_dict.index("above") and p_word.item() ==  words_dict.index("\\frac"):
+                            p_re = 'Above'
+                            prediction += '} '
+                            right_brace -= 1
+                            if right_brace != 0:
+                                for num in range(right_brace):
+                                    prediction += '} '
+                                    right_brace -= 1
+                            prediction = prediction + '{ '
+                            right_brace += 1
+                        elif word ==  words_dict.index("below") and p_word.item() ==  words_dict.index("\\frac"):
+                            p_re = 'Below'
+                            prediction += '} '
+                            right_brace -= 1
+                            if right_brace != 0:
+                                for num in range(right_brace):
+                                    prediction += '} '
+                                    right_brace -= 1
+                            prediction = prediction + '{ '
+                            right_brace += 1
                     elif word ==  words_dict.index("L-sup"):
                         p_re = 'l_sup'
                         prediction = prediction + '[ '

@@ -91,7 +91,7 @@ finetune: False
 #checkpoint: "checkpoints/SAN_2023-03-25-09-52_Encoder-DenseNet_Decoder-SAN_decoder_max_size-200-200/SAN_2023-03-25-09-52_Encoder-DenseNet_Decoder-SAN_decoder_max_size-200-200_WordRate-0.9395_structRate-1.0000_ExpRate-0.3347_961.pth"
 
 # Tentativa 3 - test_nossas_labels_sem_oversets_enlinhados_e_vazaios
-checkpoint: "checkpoints/SAN_2023-03-25-09-52_Encoder-DenseNet_Decoder-SAN_decoder_max_size-200-200/san_best.pth"
+checkpoint: "checkpoints/SAN_2023-03-25-09-52_Encoder-DenseNet_Decoder-SAN_decoder_max_size-200-200/teste.pth"
  
 
 #checkpoint: "checkpoints/SAN_decoder/best.pth"
