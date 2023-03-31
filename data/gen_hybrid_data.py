@@ -104,7 +104,7 @@ for line in tqdm(lines):
             elif words[i - 1] == '}' and parents[-1].label == '\\overset' and parents[-1].op == 'sup':
                 parent = Tree('below', id=parents[-1].id + 1)
                 parents[-1].op = 'below'
-                continue
+                
 
                 # USANDO A ESTRUTURA DO ^
             # elif words[i-1] == '\\overset':

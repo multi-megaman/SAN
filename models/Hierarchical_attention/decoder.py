@@ -22,7 +22,7 @@ class SAN_decoder(nn.Module):
         with open('data/word.txt',"r", encoding='UTF8') as f:
             words_dict = f.read().splitlines()
         
-        self.struct_dict = [words_dict.index("above"), words_dict.index("below"), words_dict.index("sub"), words_dict.index("sup"), words_dict.index("L-sup"), words_dict.index("inside"), words_dict.index("inside")]
+        self.struct_dict = [words_dict.index("above"), words_dict.index("below"), words_dict.index("sub"), words_dict.index("sup"), words_dict.index("L-sup"), words_dict.index("inside"), words_dict.index("right")]
         #--------------------------------------------
         
         # self.struct_dict = [108, 109, 110, 111, 112, 113, 114]
