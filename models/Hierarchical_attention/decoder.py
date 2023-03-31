@@ -20,7 +20,7 @@ class SAN_decoder(nn.Module):
         
         #TESTE---------------------------------------
         with open('../../data/word.txt',"r", encoding='UTF8') as f:
-            words_dict = f.readlines()
+            words_dict = f.read().splitlines()
         
         self.struct_dict = [words_dict.index("above"), words_dict.index("below"), words_dict.index("sub"), words_dict.index("sup"), words_dict.index("L-sup"), words_dict.index("inside"), words_dict.index("inside")]
         #--------------------------------------------
@@ -74,7 +74,7 @@ class SAN_decoder(nn.Module):
 
         #TESTE---------------------------------------
         with open('../../data/word.txt',"r", encoding='UTF8') as f:
-            words_dict = f.readlines()
+            words_dict = f.read().splitlines()
         #--------------------------------------------
 
         batch_size, num_steps, _ = labels.shape
