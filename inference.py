@@ -27,6 +27,7 @@ if not args.config:
 params = load_config(args.config)
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+device = 'cpu'
 params['device'] = device
 
 words = Words(params['word_path'])
