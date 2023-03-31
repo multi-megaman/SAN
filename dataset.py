@@ -131,7 +131,7 @@ def get_dataset(params):
 
     datasets_list = [train_dataset]
 
-    for i in range(100):
+    for i in range(10):
         train_dataset_transformed = HYBTr_Dataset(params, params['train_image_path'], params['train_label_path'], words,
                                                   transform=transform)
         datasets_list.append(train_dataset_transformed)

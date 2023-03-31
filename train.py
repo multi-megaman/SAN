@@ -77,19 +77,19 @@ for epoch in range(params['epoches']):
 
     train_loss, train_word_score, train_node_score, train_expRate = train(params, model, optimizer, epoch, train_loader, writer=writer)
 
-    if epoch > 100 and (epoch % 20 == 0):
-        save_checkpoint(model, optimizer, train_word_score, train_node_score, train_expRate, epoch + 1,
-                        optimizer_save=params['optimizer_save'], path=params['checkpoint_dir'])
+    # if epoch > 100 and (epoch % 20 == 0):
+    #     save_checkpoint(model, optimizer, train_word_score, train_node_score, train_expRate, epoch + 1,
+    #                     optimizer_save=params['optimizer_save'], path=params['checkpoint_dir'])
 
-    '''
-    if True:
-    #if epoch > 10 and epoch % 10 == 0:
+
+    #if True:
+    if epoch > 100:
         eval_loss, eval_word_score, eval_node_score, eval_expRate = eval(params, model, epoch, eval_loader, writer=writer)
 
         print(f'Epoch: {epoch+1}  loss: {eval_loss:.4f}  word score: {eval_word_score:.4f}  struct score: {eval_node_score:.4f} '
             f'ExpRate: {eval_expRate:.4f}')
 
-        if eval_expRate >= min_score and not args.check:
+        if eval_expRate > min_score and not args.check:
             min_score = eval_expRate
             save_checkpoint(model, optimizer, eval_word_score, eval_node_score, eval_expRate, epoch+1,
                             optimizer_save=params['optimizer_save'], path=params['checkpoint_dir'])
@@ -111,7 +111,7 @@ for epoch in range(params['epoches']):
 
                 min_step = 0
 
-'''
+
 
 
 
