@@ -157,6 +157,17 @@ class SAN_decoder(nn.Module):
                             p_re = 'Below'
                             prediction = prediction + '{ '
                             right_brace += 1
+                    # TESTE ---------------------------------------
+                    if ("\\overset" in words_dict):
+                        if word ==  words_dict.index("sup") and p_word.item() ==  words_dict.index("\\overset"):
+                            p_re = 'Sup'
+                            prediction = prediction + '{ '
+                            right_brace += 1
+                        elif word ==  words_dict.index("below") and p_word.item() ==  words_dict.index("\\overset"):
+                            p_re = 'Below'
+                            prediction = prediction + '{ '
+                            right_brace += 1
+                    #----------------------------------------------
                     elif word ==  words_dict.index("L-sup"):
                         p_re = 'l_sup'
                         prediction = prediction + '[ '
@@ -219,6 +230,29 @@ class SAN_decoder(nn.Module):
                                     right_brace -= 1
                             prediction = prediction + '{ '
                             right_brace += 1
+                    # TESTE --------------------------------------------------------------
+                    if ("\\overset" in words_dict):
+                        if word ==  words_dict.index("sup") and p_word.item() ==  words_dict.index("\\overset"):
+                            p_re = 'Sup'
+                            prediction += '} '
+                            right_brace -= 1
+                            if right_brace != 0:
+                                for num in range(right_brace):
+                                    prediction += '} '
+                                    right_brace -= 1
+                            prediction = prediction + '{ '
+                            right_brace += 1
+                        elif word ==  words_dict.index("below") and p_word.item() ==  words_dict.index("\\overset"):
+                            p_re = 'Below'
+                            prediction += '} '
+                            right_brace -= 1
+                            if right_brace != 0:
+                                for num in range(right_brace):
+                                    prediction += '} '
+                                    right_brace -= 1
+                            prediction = prediction + '{ '
+                            right_brace += 1
+                    #---------------------------------------------------------------------
                     elif word ==  words_dict.index("L-sup"):
                         p_re = 'l_sup'
                         prediction = prediction + '[ '
