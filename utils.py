@@ -54,8 +54,9 @@ def updata_lr(optimizer, current_epoch, current_step, steps, epoches, initial_lr
 
 def save_checkpoint(model, optimizer, word_score, struct_score, ExpRate_score, epoch, optimizer_save=False, path='checkpoints', multi_gpu=False, local_rank=0):
 
-   #filename = f'{os.path.join(path, model.name)}/{model.name}_WordRate-{word_score:.4f}_structRate-{struct_score:.4f}_ExpRate-{ExpRate_score:.4f}_{epoch}.pth'
-    filename = f'{os.path.join(path, model.name)}/{model.name}_{epoch}.pth'
+    #filename = f'{os.path.join(path, model.name)}/{model.name}_WordRate-{word_score:.4f}_structRate-{struct_score:.4f}_ExpRate-{ExpRate_score:.4f}_{epoch}.pth'
+    filename = f'{os.path.join(path, model.name)}/{model.name}_-{word_score:.2f}-{ExpRate_score:.2f}_{epoch}.pth'
+    #filename = f'{os.path.join(path, model.name)}/{model.name}_{epoch}.pth'
 
     if optimizer_save:
         state = {

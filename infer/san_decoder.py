@@ -137,7 +137,7 @@ class SAN_decoder(nn.Module):
                     if len(struct_list) == 0:
                         break
                     word, parent_hidden, p_word, pid, word_alpha_sum = struct_list.pop()
-                    print(torch.LongTensor([word]))
+                    #print(torch.LongTensor([word]))
                     word_embedding = self.embedding(torch.LongTensor([word]).to(device=self.device))
                     if ("\sum" in words_dict):
                         if word == words_dict.index("sub") or (word == words_dict.index("below") and p_word.item() == words_dict.index("\sum")):

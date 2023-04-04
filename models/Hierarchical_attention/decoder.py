@@ -201,7 +201,7 @@ class SAN_decoder(nn.Module):
                     if len(struct_list) == 0:
                         break
                     word, parent_hidden, word_alpha_sum = struct_list.pop()
-                    print('word:', word)
+                    #print('word:', word)
                     word_embedding = self.embedding(torch.LongTensor([word]).to(device=self.device))
 
                 elif word == 0:

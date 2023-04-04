@@ -96,8 +96,12 @@ finetune: False
 # Tentativa 4
 #checkpoint: "checkpoints/SAN_2023-03-31-11-37_Encoder-DenseNet_Decoder-SAN_decoder_max_size-200-200/SAN_2023-03-31-11-37_Encoder-DenseNet_Decoder-SAN_decoder_max_size-200-200_195.pth"
 
-# Tentativa 5
-checkpoint: "checkpoints/SAN_2023-03-31-14-28_Encoder-DenseNet_Decoder-SAN_decoder_max_size-200-200/SAN_2023-03-31-14-28_Encoder-DenseNet_Decoder-SAN_decoder_max_size-200-200_135.pth"
+# Tentativa 5 - em torno de 72% ExpRate no conjunto de teste
+#checkpoint: "checkpoints/SAN_2023-03-31-14-28_Encoder-DenseNet_Decoder-SAN_decoder_max_size-200-200/SAN_2023-03-31-14-28_Encoder-DenseNet_Decoder-SAN_decoder_max_size-200-200_135.pth"
+
+# Tentativa 6
+checkpoint: "checkpoints/SAN_2023-04-03-09-14_Encoder-DenseNet_Decoder-SAN_decoder_max_size-200-200/SAN_2023-04-03-09-14_Encoder-DenseNet_Decoder-SAN_decoder_max_size-200-200_-0.84-0.38_236.pth"
+
 #checkpoint: "checkpoints/SAN_decoder/best.pth"
 
 

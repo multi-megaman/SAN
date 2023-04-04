@@ -83,7 +83,7 @@ for epoch in range(params['epoches']):
 
 
     #if True:
-    if epoch > 100:
+    if epoch > 10:
         eval_loss, eval_word_score, eval_node_score, eval_expRate = eval(params, model, epoch, eval_loader, writer=writer)
 
         print(f'Epoch: {epoch+1}  loss: {eval_loss:.4f}  word score: {eval_word_score:.4f}  struct score: {eval_node_score:.4f} '
