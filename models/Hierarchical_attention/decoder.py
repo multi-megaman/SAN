@@ -13,7 +13,6 @@ class SAN_decoder(nn.Module):
         self.hidden_size = params['decoder']['hidden_size']
         self.out_channel = params['encoder']['out_channels']
         self.word_num = params['word_num']
-        self.dropout_prob = params['dropout']
         self.device = params['device']
         self.word_num = params['word_num']
         self.struct_num = params['struct_num']

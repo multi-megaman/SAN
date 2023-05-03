@@ -136,3 +136,5 @@ def cal_score(probs, labels, mask):
     struct_scores = np.mean(struct_scores) if struct_probs is not None else 0
     return word_scores, struct_scores, ExpRate
 
+
+

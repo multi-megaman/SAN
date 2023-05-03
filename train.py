@@ -35,6 +35,8 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 # device = 'cpu'
 params['device'] = device
 
+print('Using device', device)
+
 train_loader, eval_loader = get_dataset(params)
 
 # with tqdm(train_loader, total=len(train_loader)) as pbar:
@@ -77,39 +79,42 @@ for epoch in range(params['epoches']):
 
     train_loss, train_word_score, train_node_score, train_expRate = train(params, model, optimizer, epoch, train_loader, writer=writer)
 
-    # if epoch > 100 and (epoch % 20 == 0):
-    #     save_checkpoint(model, optimizer, train_word_score, train_node_score, train_expRate, epoch + 1,
-    #                     optimizer_save=params['optimizer_save'], path=params['checkpoint_dir'])
+    if epoch > 100 and (epoch % 50 == 0):
+
+        eval_loss, eval_word_score, eval_node_score, eval_expRate = eval(params, model, epoch, eval_loader, writer=writer)
+
+        save_checkpoint(model, optimizer, eval_word_score, eval_node_score, eval_expRate, epoch + 1,
+                        optimizer_save=params['optimizer_save'], path=params['checkpoint_dir'])
 
 
     #if True:
-    if epoch > 10:
-        eval_loss, eval_word_score, eval_node_score, eval_expRate = eval(params, model, epoch, eval_loader, writer=writer)
-
-        print(f'Epoch: {epoch+1}  loss: {eval_loss:.4f}  word score: {eval_word_score:.4f}  struct score: {eval_node_score:.4f} '
-            f'ExpRate: {eval_expRate:.4f}')
-
-        if eval_expRate > min_score and not args.check:
-            min_score = eval_expRate
-            save_checkpoint(model, optimizer, eval_word_score, eval_node_score, eval_expRate, epoch+1,
-                            optimizer_save=params['optimizer_save'], path=params['checkpoint_dir'])
-            min_step = 0
-
-        elif min_score != 0 and 'lr_decay' in params and params['lr_decay'] == 'step':
-
-            min_step += 1
-
-            if min_step > params['step_ratio']:
-                new_lr = optimizer.param_groups[0]['lr'] / params['step_decay']
-
-                if new_lr < params['lr'] / 1000:
-                    print('lr is too small')
-                    exit(-1)
-
-                for param_group in optimizer.param_groups:
-                    param_group['lr'] = new_lr
-
-                min_step = 0
+    # if epoch > 10:
+    #     eval_loss, eval_word_score, eval_node_score, eval_expRate = eval(params, model, epoch, eval_loader, writer=writer)
+    #
+    #     print(f'Epoch: {epoch+1}  loss: {eval_loss:.4f}  word score: {eval_word_score:.4f}  struct score: {eval_node_score:.4f} '
+    #         f'ExpRate: {eval_expRate:.4f}')
+    #
+    #     if eval_expRate > min_score and not args.check:
+    #         min_score = eval_expRate
+    #         save_checkpoint(model, optimizer, eval_word_score, eval_node_score, eval_expRate, epoch+1,
+    #                         optimizer_save=params['optimizer_save'], path=params['checkpoint_dir'])
+    #         min_step = 0
+    #
+    #     elif min_score != 0 and 'lr_decay' in params and params['lr_decay'] == 'step':
+    #
+    #         min_step += 1
+    #
+    #         if min_step > params['step_ratio']:
+    #             new_lr = optimizer.param_groups[0]['lr'] / params['step_decay']
+    #
+    #             if new_lr < params['lr'] / 1000:
+    #                 print('lr is too small')
+    #                 exit(-1)
+    #
+    #             for param_group in optimizer.param_groups:
+    #                 param_group['lr'] = new_lr
+    #
+    #             min_step = 0
 
 
 

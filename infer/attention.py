@@ -15,8 +15,8 @@ class Attention(nn.Module):
         self.hidden_weight = nn.Linear(self.hidden, self.attention_dim)
         self.encoder_feature_conv = nn.Conv2d(self.channel, self.attention_dim, kernel_size=1)
 
-        self.attention_conv = nn.Conv2d(1, 32, kernel_size=11, padding=5, bias=False)
-        self.attention_weight = nn.Linear(32, self.attention_dim, bias=False)
+        self.attention_conv = nn.Conv2d(1, params['attention']['attention_ch'], kernel_size=11, padding=5, bias=False)
+        self.attention_weight = nn.Linear(params['attention']['attention_ch'], self.attention_dim, bias=False)
         self.alpha_convert = nn.Linear(self.attention_dim, 1)
 
     def forward(self, cnn_features, hidden, alpha_sum, image_mask=None):

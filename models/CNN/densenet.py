@@ -69,7 +69,8 @@ class DenseNet(nn.Module):
         bottleneck = params['densenet']['bottleneck']
         use_dropout = params['densenet']['use_dropout']
 
-        nDenseBlocks = 16
+        #nDenseBlocks = 16
+        nDenseBlocks = params['densenet']['nDenseBlocks']
         nChannels = 2 * growthRate
         self.conv1 = nn.Conv2d(params['encoder']['input_channels'], nChannels, kernel_size=7, padding=3, stride=2, bias=False)
         self.dense1 = self._make_dense(nChannels, growthRate, nDenseBlocks, bottleneck, use_dropout)
@@ -77,11 +78,13 @@ class DenseNet(nn.Module):
         nOutChannels = int(math.floor(nChannels * reduction))
         self.trans1 = Transition(nChannels, nOutChannels, use_dropout)
 
-        nChannels = nOutChannels
-        self.dense2 = self._make_dense(nChannels, growthRate, nDenseBlocks, bottleneck, use_dropout)
-        nChannels += nDenseBlocks * growthRate
-        nOutChannels = int(math.floor(nChannels * reduction))
-        self.trans2 = Transition(nChannels, nOutChannels, use_dropout)
+        self.use_three_layers = params['densenet']['three_layers']
+        if self.use_three_layers == True:
+            nChannels = nOutChannels
+            self.dense2 = self._make_dense(nChannels, growthRate, nDenseBlocks, bottleneck, use_dropout)
+            nChannels += nDenseBlocks * growthRate
+            nOutChannels = int(math.floor(nChannels * reduction))
+            self.trans2 = Transition(nChannels, nOutChannels, use_dropout)
 
         nChannels = nOutChannels
         self.dense3 = self._make_dense(nChannels, growthRate, nDenseBlocks, bottleneck, use_dropout)
@@ -102,22 +105,23 @@ class DenseNet(nn.Module):
         out = F.max_pool2d(out, 2, ceil_mode=True)
         out = self.dense1(out)
         out = self.trans1(out)
-        out = self.dense2(out)
-        out = self.trans2(out)
+        if self.use_three_layers == True:
+            out = self.dense2(out)
+            out = self.trans2(out)
         out = self.dense3(out)
         return out
 
 if __name__ == '__main__':
-    from torchstat import stat
 
     model = DenseNet(params={'encoder':
                                  {'input_channels': 1},
                              'densenet':
                                  {'growthRate': 24,
+                                  'nDenseBlocks': 4,
                                   'reduction': 0.5,
+                                  'three_layers': True,
                                   'bottleneck': True,
                                   'use_dropout': True}})
-    stat(model, input_size=(1, 320, 320))
 
     a = torch.zeros((1,1,320,320))
     out = model(a)

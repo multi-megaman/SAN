@@ -118,9 +118,9 @@ def get_dataset(params):
 
     transform = torchvision.transforms.Compose([
         torchvision.transforms.ToPILImage(),
-        torchvision.transforms.RandomResizedCrop(size=(150, 150),
-                                                 scale=(0.8, 1.2),
-                                                 ratio=(3.0 / 4.0, 4.0 / 3.0)),
+        # torchvision.transforms.RandomResizedCrop(size=(150, 150),
+        #                                          scale=(0.8, 1.2),
+        #                                          ratio=(3.0 / 4.0, 4.0 / 3.0)),
         torchvision.transforms.RandomRotation(degrees=30),
         torchvision.transforms.RandomAdjustSharpness(sharpness_factor=2),
         torchvision.transforms.ElasticTransform(alpha=40.0, sigma=3.0),
@@ -131,10 +131,11 @@ def get_dataset(params):
 
     datasets_list = [train_dataset]
 
-    for i in range(100):
-        train_dataset_transformed = HYBTr_Dataset(params, params['train_image_path'], params['train_label_path'], words,
-                                                  transform=transform)
-        datasets_list.append(train_dataset_transformed)
+    if params['data_augmentation'] > 0:
+        for i in range(params['data_augmentation']):
+            train_dataset_transformed = HYBTr_Dataset(params, params['train_image_path'], params['train_label_path'], words,
+                                                      transform=transform)
+            datasets_list.append(train_dataset_transformed)
 
     train_dataset_final = torch.utils.data.ConcatDataset(datasets_list)
 

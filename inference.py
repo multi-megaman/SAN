@@ -136,10 +136,10 @@ with torch.no_grad():
         latex_list = convert(1, prediction)
         latex_string = ' '.join(latex_list)
 
-        print(latex_string)
-        cv2.imshow('image', img)
-
-        cv2.waitKey()
+        # print(latex_string)
+        # cv2.imshow('image', img)
+        #
+        # cv2.waitKey()
 
 
         if latex_string == label.strip():

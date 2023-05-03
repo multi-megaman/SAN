@@ -6,7 +6,7 @@ seed: 20200814
 
 # 训练参数
 epoches: 1000
-batch_size: 64
+batch_size: 4
 workers: 0
 optimizer: Adadelta
 lr: 1
@@ -16,8 +16,10 @@ eps: 1e-6
 weight_decay: 1e-4
 beta: 0.9
 image_resize: True
-image_width: 200
-image_height: 200
+#image_width: 200
+#image_height: 200
+image_width: 3200
+image_height: 400
 image_channel: 1
 dropout: True
 dropout_ratio: 0.5
@@ -97,10 +99,13 @@ finetune: False
 #checkpoint: "checkpoints/SAN_2023-03-31-11-37_Encoder-DenseNet_Decoder-SAN_decoder_max_size-200-200/SAN_2023-03-31-11-37_Encoder-DenseNet_Decoder-SAN_decoder_max_size-200-200_195.pth"
 
 # Tentativa 5 - em torno de 72% ExpRate no conjunto de teste
-#checkpoint: "checkpoints/SAN_2023-03-31-14-28_Encoder-DenseNet_Decoder-SAN_decoder_max_size-200-200/SAN_2023-03-31-14-28_Encoder-DenseNet_Decoder-SAN_decoder_max_size-200-200_135.pth"
+# checkpoint: "checkpoints/SAN_2023-03-31-14-28_Encoder-DenseNet_Decoder-SAN_decoder_max_size-200-200/SAN_2023-03-31-14-28_Encoder-DenseNet_Decoder-SAN_decoder_max_size-200-200_135.pth"
 
 # Tentativa 6
-checkpoint: "checkpoints/SAN_2023-04-03-09-14_Encoder-DenseNet_Decoder-SAN_decoder_max_size-200-200/SAN_2023-04-03-09-14_Encoder-DenseNet_Decoder-SAN_decoder_max_size-200-200_-0.84-0.38_236.pth"
+#checkpoint: "checkpoints/SAN_2023-04-03-09-14_Encoder-DenseNet_Decoder-SAN_decoder_max_size-200-200/SAN_2023-04-03-09-14_Encoder-DenseNet_Decoder-SAN_decoder_max_size-200-200_-0.84-0.38_236.pth"
+
+# Tentativa 7
+checkpoint: "checkpoints/SAN_2023-04-04-08-30_Encoder-DenseNet_Decoder-SAN_decoder_max_size-200-200/SAN_2023-04-04-08-30_Encoder-DenseNet_Decoder-SAN_decoder_max_size-200-200_-0.84-0.34_128.pth"
 
 #checkpoint: "checkpoints/SAN_decoder/best.pth"
 
