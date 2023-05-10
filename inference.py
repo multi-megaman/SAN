@@ -10,7 +10,7 @@ from infer.Backbone import Backbone
 from dataset import Words
 
 parser = argparse.ArgumentParser(description='Spatial channel attention')
-parser.add_argument('--config', default='config.yaml', type=str, help='配置文件路径')
+parser.add_argument('--config', default='./checkpoints/model_1/config.yaml', type=str, help='配置文件路径')
 #parser.add_argument('--image_path', default='data/DataBase/test/test_images', type=str, help='测试image路径')
 #parser.add_argument('--image_path', default='data/new_test/images', type=str, help='测试image路径')
 parser.add_argument('--image_path', default='data/Base_soma_subtracao/test/test_images', type=str, help='')
