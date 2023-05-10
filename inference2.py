@@ -176,7 +176,7 @@ def Make_inference(checkpointFolder,configPath,checkpointPath,imagePath='data/Ba
                 }
             
             
-        print(str(inferences_awnser))
+        #print(str(inferences_awnser))
         pred_time_mean = np.array(list(pred_times.values())).mean()
         exp_rate = exp_right / len(labels)
         with open(os.path.join(inferences_directory,"prediction times - mean "+str(pred_time_mean).replace(".",",")+"s.txt"),"w+", encoding='UTF8') as f:
@@ -185,7 +185,7 @@ def Make_inference(checkpointFolder,configPath,checkpointPath,imagePath='data/Ba
         with open(os.path.join(inferences_directory,"inferences - exp_rate- "+str(exp_rate).replace(".",",")+".txt"),"w+", encoding='UTF8') as g:
             g.write(str(inferences_awnser))
         g.close()
-        print(exp_right / len(labels))
+        #print(exp_right / len(labels))
         # print("exp_right: " + str(exp_right))
         # print("len(labels)" + str(len(labels)))
 
