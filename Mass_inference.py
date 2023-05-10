@@ -1,7 +1,9 @@
 import inference2
 import torch
 import os
+from datetime import datetime
 
+actualDate = datetime.now().strftime("%d-%m-%Y %H-%M-%S")
 actualDevice = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 checkpointsPath = "./checkpoints"
 checkpointsFolder = [f.path for f in os.scandir(os.path.abspath(checkpointsPath)) if f.is_dir()]   #ex: ["C:/checkpoints/model_1","C:/checkpoints/model_2"]
@@ -11,6 +13,10 @@ actualModelConfig = ""
 
 # print(checkpointsFolder)
 # print(checkpointsFile)
-for x in range(checkpointsFolder):
-    inference2.Make_inference(configPath=checkpointsConfig[x], device=actualDevice)
+for x in range(len(checkpointsFolder)):
+    exp_rate, pred_time_mean, experiment = inference2.Make_inference(checkpointFolder=checkpointsFolder[x],
+                              configPath=checkpointsConfig[x],
+                              checkpointPath=checkpointsFile[x], 
+                              device=actualDevice,
+                              date=actualDate)
 
