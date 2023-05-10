@@ -1,7 +1,10 @@
 import os
 import cv2
+from datetime import datetime
+import numpy as np
 # import argparse
 import torch
+from time import process_time
 import json
 from tqdm import tqdm
 
@@ -9,7 +12,7 @@ from utils import load_config, load_checkpoint
 from infer.Backbone import Backbone
 from dataset import Words
 
-def Make_inference(configPath,imagePath='data/Base_soma_subtracao/val/val_images',labelPath='data/Base_soma_subtracao/val/val_labels.txt', device='cpu'):
+def Make_inference(checkpointFolder,configPath,checkpointPath,imagePath='data/Base_soma_subtracao/val/val_images',labelPath='data/Base_soma_subtracao/val/val_labels.txt', date= "12/12/2012 12:12:12.121212", device='cpu'):
     #parser = argparse.ArgumentParser(description='Spatial channel attention')
     #parser.add_argument('--config', default='./checkpoints/model_1/config.yaml', type=str, help='配置文件路径')
     #parser.add_argument('--image_path', default='data/DataBase/test/test_images', type=str, help='测试image路径')
@@ -36,7 +39,7 @@ def Make_inference(configPath,imagePath='data/Base_soma_subtracao/val/val_images
     params['struct_num'] = 7
     params['words'] = words
 
-    params['checkpoint'] = "./checkpoints/model_1/model_1.pth"
+    params['checkpoint'] = checkpointPath
 
     model = Backbone(params)
     model = model.to(device)
@@ -117,6 +120,14 @@ def Make_inference(configPath,imagePath='data/Base_soma_subtracao/val/val_images
 
     with torch.no_grad():
         bad_case = {}
+        pred_times={}
+        inferences_awnser={}
+        pred_time_mean = 0
+
+        inferences_directory = os.path.join(checkpointFolder,"inferences -" + str(date))
+        if not os.path.exists(inferences_directory):
+            os.makedirs(inferences_directory)
+            
         for item in tqdm(labels):
             name, *label = item.split()
             label = ' '.join(label)
@@ -134,11 +145,19 @@ def Make_inference(configPath,imagePath='data/Base_soma_subtracao/val/val_images
             image_mask = torch.ones(image.shape)
             image, image_mask = image.to(device), image_mask.to(device)
 
+            #medir tempo
+            pred_start = process_time()
             prediction = model(image, image_mask)
+            pred_end = process_time()
+            
+            pred_time = pred_end-pred_start
+            pred_times[name]=pred_time
+            #medir tempo
 
             latex_list = convert(1, prediction)
             latex_string = ' '.join(latex_list)
 
+            
             # print(latex_string)
             # cv2.imshow('image', img)
             #
@@ -147,19 +166,33 @@ def Make_inference(configPath,imagePath='data/Base_soma_subtracao/val/val_images
 
             if latex_string == label.strip():
                 exp_right += 1
+                inferences_awnser[name]=(latex_string + " ---> V")
             else:
+                inferences_awnser[name]=(latex_string + " ---> X")
                 bad_case[name] = {
                     'label': label,
                     'predi': latex_string,
                     'list': prediction
                 }
-
+            
+            
+        print(str(inferences_awnser))
+        pred_time_mean = np.array(list(pred_times.values())).mean()
+        exp_rate = exp_right / len(labels)
+        with open(os.path.join(inferences_directory,"prediction times - mean "+str(pred_time_mean).replace(".",",")+"s.txt"),"w+", encoding='UTF8') as f:
+            f.write(str(pred_times))
+        f.close()
+        with open(os.path.join(inferences_directory,"inferences - exp_rate- "+str(exp_rate).replace(".",",")+".txt"),"w+", encoding='UTF8') as g:
+            g.write(str(inferences_awnser))
+        g.close()
         print(exp_right / len(labels))
         # print("exp_right: " + str(exp_right))
         # print("len(labels)" + str(len(labels)))
 
     with open('bad_case.json', 'w') as f:
         json.dump(bad_case, f, ensure_ascii=False)
+
+    return exp_rate, pred_time_mean, params["experiment"]
 
 
 
