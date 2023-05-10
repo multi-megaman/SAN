@@ -63,6 +63,14 @@ def train_save_SAN_model(params_optuna, model_name):
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     #device = 'cpu'
+
+    if not os.path.exists(os.path.join('checkpoints', model_name)):
+        os.makedirs(os.path.join('checkpoints', model_name), exist_ok=True)
+
+        file = open(os.path.join('checkpoints', model_name)+"/config.yaml", "w")
+        yaml.dump(params, file)
+        file.close()
+
     params['device'] = device
 
     print('Using device', device)
@@ -86,13 +94,6 @@ def train_save_SAN_model(params_optuna, model_name):
     optimizer = getattr(torch.optim, params['optimizer'])(model.parameters(), lr=float(params['lr']),
                                                           eps=float(params['eps']), weight_decay=float(params['weight_decay']))
 
-    if not os.path.exists(os.path.join('checkpoints', model_name)):
-        os.makedirs(os.path.join('checkpoints', model_name), exist_ok=True)
-
-        file = open(os.path.join('checkpoints', model_name)+"/config.yaml", "w")
-        yaml.dump(params, file)
-        file.close()
-
 
     max_eval_expRate = 0
     min_step = 0
@@ -111,16 +112,16 @@ def train_save_SAN_model(params_optuna, model_name):
                 max_train_expRate = train_expRate
                 min_step = epoch
 
+                filename = f'{os.path.join("checkpoints", model_name)}/{model_name}_{epoch}.pth'
+                state = {
+                    'model': model.state_dict(),
+                    'optimizer': optimizer.state_dict(),
+                }
+                torch.save(state, filename)
+
         # stop if no improvement for more than 30 epochs
         if (epoch+1) >= min_step + 30:
             break
-
-        filename = f'{os.path.join("checkpoints", model_name)}/{model_name}.pth'
-        state = {
-            'model': model.state_dict(),
-            'optimizer': optimizer.state_dict(),
-        }
-        torch.save(state, filename)
 
 
     return max_eval_expRate, max_train_expRate
