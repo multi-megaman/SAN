@@ -18,8 +18,8 @@ densenet:
   reduction: 0.5
   three_layers: true
   use_dropout: false
-device: !!python/object/apply:torch.device
-- cuda
+#device: !!python/object/apply:torch.device
+#- cuda
 dropout: true
 dropout_ratio: 0.5
 encoder:
