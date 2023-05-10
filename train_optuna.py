@@ -30,7 +30,7 @@ def train_test_SAN_model(params=None):
                       eval_label_path='data/test_label.pkl',
                       word_path='data/word.txt',
                       encoder={'net': 'DenseNet', 'input_channels': 1, 'out_channels': 684}, resnet={'conv1_stride': 1},
-                      densenet={'ratio': 16, 'growthRate': 24, 'reduction': 0.5, 'bottleneck': True, 'use_dropout': True},
+                      densenet={'ratio': 16, 'three_layers': True, 'nDenseBlocks': 16,'growthRate': 24, 'reduction': 0.5, 'bottleneck': True, 'use_dropout': True},
                       decoder={'net': 'SAN_decoder', 'cell': 'GRU', 'input_size': 64, 'hidden_size': 64},
                       attention={'attention_dim': 512, 'attention_ch': 32},
                       hybrid_tree={'threshold': 0.5}, optimizer_save=True,
@@ -112,6 +112,6 @@ def train_test_SAN_model(params=None):
 
 if __name__ == '__main__':
 
-    params = {'attention_ch': 32, 'attention_dim': 256, 'batch_size': 8, 'bottleneck': True, 'data_augmentation': 100, 'decoder_input_size': 64, 'growthRate': 16, 'nDenseBlocks': 4, 'reduction': 0.5, 'three_layers': True, 'use_dropout': False}
+    params = None
 
     train_test_SAN_model(params=params)
