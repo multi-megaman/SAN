@@ -112,18 +112,6 @@ def train_test_SAN_model(params=None):
 
 if __name__ == '__main__':
 
-    params = dict(experiment='SAN', epoches=1000, batch_size=8, workers=0, optimizer='Adadelta', lr=1,
-                  lr_decay='cosine', eps='1e-6', weight_decay='1e-4', image_width=3200, image_height=400,
-                  image_channel=1, dropout=True, dropout_ratio=0.5, relu=True, gradient=100, gradient_clip=True,
-                  use_label_mask=False, train_image_path='data/train_image.pkl',
-                  train_label_path='data/train_label.pkl', eval_image_path='data/test_image.pkl',
-                  eval_label_path='data/test_label.pkl', word_path='data/word.txt',
-                  encoder={'net': 'DenseNet', 'input_channels': 1, 'out_channels': 684},
-                  resnet={'conv1_stride': 1},
-                  densenet={'ratio': 16, 'growthRate': 2, 'three_layers': False, 'nDenseBlocks': 2, 'reduction': 0.5, 'bottleneck': False, 'use_dropout': False},
-                  decoder={'net': 'SAN_decoder', 'cell': 'GRU', 'input_size': 8, 'hidden_size': 8},
-                  attention={'attention_dim': 8, 'attention_ch': 2}, hybrid_tree={'threshold': 0.5},
-                  optimizer_save=True, checkpoint_dir='checkpoints', finetune=False, checkpoint='', data_augmentation=10,
-                  log_dir='logs')
+    params = {'attention_ch': 32, 'attention_dim': 256, 'batch_size': 8, 'bottleneck': True, 'data_augmentation': 100, 'decoder_input_size': 64, 'growthRate': 16, 'nDenseBlocks': 4, 'reduction': 0.5, 'three_layers': True, 'use_dropout': False}
 
     train_test_SAN_model(params=params)
