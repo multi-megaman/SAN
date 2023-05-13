@@ -130,5 +130,6 @@ def train_save_SAN_model(params_optuna, model_name):
 if __name__ == '__main__':
 
     params_optuna = {'attention_ch': 32, 'attention_dim': 256, 'batch_size': 8, 'bottleneck': True, 'data_augmentation': 100, 'decoder_input_size': 64, 'growthRate': 16, 'nDenseBlocks': 4, 'reduction': 0.5, 'three_layers': True, 'use_dropout': False}
+    model_name = 'optuna_model_1'
 
-    train_save_SAN_model(params_optuna, model_name='model_1')
+    train_save_SAN_model(params_optuna, model_name=model_name)
