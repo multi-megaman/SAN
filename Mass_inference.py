@@ -43,6 +43,7 @@ for n,experiment in enumerate(inferencesInfos):
     for i, modelName in enumerate(inferencesInfos[experiment]["model_name"]):
         ax.annotate(str(experiment) + " " + str(modelName), (inferencesInfos[experiment]["exp_rate"][i], inferencesInfos[experiment]["time_mean"][i]))
 
+plt.savefig(str(actualDate) + '.png')
 plt.show()
 
 
