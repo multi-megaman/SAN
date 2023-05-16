@@ -120,8 +120,8 @@ def train_save_SAN_model(params_optuna, model_name):
                 torch.save(state, filename)
 
         # stop if no improvement for more than 30 epochs
-        if (epoch+1) >= min_step + 30:
-            break
+        # if (epoch+1) >= min_step + 30:
+        #     break
 
 
     return max_eval_expRate, max_train_expRate
@@ -130,6 +130,6 @@ def train_save_SAN_model(params_optuna, model_name):
 if __name__ == '__main__':
 
     params_optuna = {'attention_ch': 32, 'attention_dim': 256, 'batch_size': 8, 'bottleneck': True, 'data_augmentation': 100, 'decoder_input_size': 64, 'growthRate': 16, 'nDenseBlocks': 4, 'reduction': 0.5, 'three_layers': True, 'use_dropout': False}
-    model_name = 'optuna_model_1'
+    model_name = 'optuna_model_1_500e'
 
     train_save_SAN_model(params_optuna, model_name=model_name)
